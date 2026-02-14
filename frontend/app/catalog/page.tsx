@@ -62,14 +62,13 @@ export default function CatalogPage() {
         {/* 1: Що таке текстові рольові ігри */}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] items-center">
           <div className="flex justify-center lg:justify-start">
-            <div className="w-[170px] sm:w-[210px] md:w-[240px] lg:w-[864px] max-w-full">
+            <div className="h-[120px] sm:h-[145px] md:h-[165px] lg:h-[190px]">
               <Image
                 src="/images/catalog-01.png"
                 alt="Іконка: текстові рольові ігри"
                 width={422}
                 height={568}
-                sizes="(max-width: 640px) 170px, (max-width: 768px) 210px, (max-width: 1024px) 240px, 864px"
-                className="h-auto w-full"
+                className="h-full w-auto object-contain"
               />
             </div>
           </div>
@@ -121,14 +120,13 @@ export default function CatalogPage() {
             </div>
           </div>
           <div className="order-1 flex justify-center lg:order-2 lg:justify-end">
-            <div className="w-[190px] sm:w-[240px] md:w-[280px] lg:w-[960px] max-w-full">
+            <div className="h-[132px] sm:h-[160px] md:h-[182px] lg:h-[209px]">
               <Image
                 src="/images/catalog-02.png"
                 alt="Іконка: каталог рольових груп"
                 width={622}
                 height={512}
-                sizes="(max-width: 640px) 190px, (max-width: 768px) 240px, (max-width: 1024px) 280px, 960px"
-                className="h-auto w-full"
+                className="h-full w-auto object-contain"
               />
             </div>
           </div>
@@ -137,14 +135,13 @@ export default function CatalogPage() {
         {/* 3: Поради для рольовиків */}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] items-center">
           <div className="flex justify-center lg:justify-start">
-            <div className="w-[170px] sm:w-[210px] md:w-[240px] lg:w-[864px] max-w-full">
+            <div className="h-[120px] sm:h-[145px] md:h-[165px] lg:h-[190px]">
               <Image
                 src="/images/catalog-03.png"
                 alt="Іконка: поради для рольовиків"
                 width={474}
                 height={513}
-                sizes="(max-width: 640px) 170px, (max-width: 768px) 210px, (max-width: 1024px) 240px, 864px"
-                className="h-auto w-full"
+                className="h-full w-auto object-contain"
               />
             </div>
           </div>
