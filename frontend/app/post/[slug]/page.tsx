@@ -12,7 +12,17 @@ type PostDetails = {
   authorImage?: string;
   categories?: string[];
   mainImage?: string;
-  body?: Array<Record<string, unknown>>;
+  body?: PortableTextBlock[];
+};
+
+type PortableTextSpan = {
+  _type: string;
+  text?: string;
+};
+
+type PortableTextBlock = {
+  _type: string;
+  children?: PortableTextSpan[];
 };
 
 const portableTextComponents: PortableTextComponents = {
@@ -32,7 +42,7 @@ function formatDate(date?: string) {
   });
 }
 
-function estimateReadTime(body?: Array<Record<string, unknown>>) {
+function estimateReadTime(body?: PortableTextBlock[]) {
   const text =
     body
       ?.filter((block) => block?._type === "block")
