@@ -1,9 +1,23 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
+  const pathname = usePathname();
+
+  const linkClass = (href: string) => {
+    const isHome = href === "/";
+    const isActive = isHome ? pathname === "/" : pathname.startsWith(href);
+
+    return `transition-colors hover:text-blue-600 focus:text-blue-600 ${
+      isActive ? "text-blue-600" : ""
+    }`;
+  };
+
   return (
     <header className="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
+      <div className="max-w-[1440px] mx-auto flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
         <Link href="/" className="flex items-center gap-2">
           {/* Якщо є лого-котик, поклади його в /public/logo.png і розкоментуй */}
           <img src="/logo.png" alt="UaRP" className="h-8 w-8 rounded-full" />
@@ -16,19 +30,16 @@ export default function Header() {
         </Link>
 
         <nav className="flex items-center gap-4 sm:gap-6 text-sm sm:text-base text-gray-700 font-medium">
-          <Link href="/" className="hover:text-blue-600 transition-colors">
+          <Link href="/" className={linkClass("/")} aria-current={pathname === "/" ? "page" : undefined}>
             Головна
           </Link>
-          <Link href="/post" className="hover:text-blue-600 transition-colors">
+          <Link href="/post" className={linkClass("/post")} aria-current={pathname.startsWith("/post") ? "page" : undefined}>
             Поради
           </Link>
-          <Link
-            href="/catalog" // коли зʼявиться сторінка каталогу, підлаштуєш маршрут
-            className="hover:text-blue-600 transition-colors"
-          >
+          <Link href="/catalog" className={linkClass("/catalog")} aria-current={pathname.startsWith("/catalog") ? "page" : undefined}>
             Каталог
           </Link>
-          <Link href="/about" className="hover:text-blue-600 transition-colors">
+          <Link href="/about" className={linkClass("/about")} aria-current={pathname.startsWith("/about") ? "page" : undefined}>
             Що таке ТРІ?
           </Link>
         </nav>

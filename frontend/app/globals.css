@@ -24,3 +24,48 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroSoftPulse {
+  0%,
+  100% {
+    text-shadow: 0 0 18px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.55);
+  }
+}
+
+@keyframes heroStrongGlow {
+  0%,
+  100% {
+    text-shadow:
+      0 0 10px rgba(255, 255, 255, 0.45),
+      0 0 22px rgba(147, 197, 253, 0.35);
+  }
+  50% {
+    text-shadow:
+      0 0 18px rgba(255, 255, 255, 0.9),
+      0 0 34px rgba(96, 165, 250, 0.65);
+  }
+}
+
+@keyframes pianoWave {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
