@@ -5,7 +5,7 @@ export const metadata = {
 
 export default function ContactsPage() {
   return (
-    <main className="max-w-2xl mx-auto py-12 px-4">
+    <main className="max-w-[1440px] mx-auto py-12 px-4">
       <h1 className="text-3xl font-bold mb-6">Contacts</h1>
       <p className="mb-4">We’d love to hear from you! 💬</p>
       <ul className="space-y-2">
