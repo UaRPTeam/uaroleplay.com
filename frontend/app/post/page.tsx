@@ -1,11 +1,12 @@
-import Link from "next/link";
-import Image from "next/image";
 import groq from "groq";
 import { client } from "../../client";
+import PostCatalogCard from "../../components/PostCatalogCard";
+
+export const revalidate = 0;
 
 export const metadata = {
-  title: "Наші поради | UaRP Blog",
-  description: "Корисні поради та статті від UaRP Blog",
+  title: "Каталог | UaRP Blog",
+  description: "Каталог статей та матеріалів від UaRP Blog",
 };
 
 type Post = {
@@ -13,41 +14,87 @@ type Post = {
   title: string;
   slug: { current: string };
   publishedAt?: string;
+  hashtags?: Array<string | { category?: string; tags?: string[] }>;
+  hashtag?: string;
   author?: string;
   authorImage?: string;
   categories?: string[];
+  postStyle?: "tips" | "catalog";
   mainImage?: string;
   body?: Array<{ _type?: string; children?: Array<{ text?: string }> }>;
 };
 
-const categoryColors = [
-  "text-blue-600",
-  "text-fuchsia-600",
-  "text-emerald-700",
-  "text-orange-600",
-];
-
 function formatDate(date?: string) {
   if (!date) return "";
-  return new Date(date).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
+  return new Date(date).toLocaleDateString("uk-UA", {
+    day: "2-digit",
+    month: "2-digit",
     year: "numeric",
   });
 }
 
+function getPrimaryHashtag(post: Post) {
+  if (Array.isArray(post.hashtags)) {
+    for (const item of post.hashtags) {
+      if (typeof item === "string") {
+        const tag = item.trim();
+        if (tag) return tag;
+        continue;
+      }
+
+      if (item && Array.isArray(item.tags)) {
+        const tag = item.tags.find((entry) => entry?.trim());
+        if (tag) return tag.trim();
+      }
+    }
+  }
+
+  if (post.hashtag?.trim()) {
+    return post.hashtag.trim();
+  }
+
+  return undefined;
+}
+
+function getRatingHashtags(post: Post) {
+  if (!Array.isArray(post.hashtags)) return undefined;
+
+  for (const item of post.hashtags) {
+    if (
+      item &&
+      typeof item === "object" &&
+      item.category === "rating" &&
+      Array.isArray(item.tags)
+    ) {
+      const tags = item.tags.map((entry) => entry?.trim()).filter(Boolean) as string[];
+      if (tags.length) {
+        return Array.from(new Set(tags));
+      }
+    }
+  }
+
+  return undefined;
+}
+
 export default async function BlogPage() {
   const posts = await client.fetch<Post[]>(groq`
-    *[_type == "post" && defined(slug.current)]
+    *[
+      _type == "post" &&
+      defined(slug.current) &&
+      (postStyle == "catalog" || "Каталог" in categories[]->title || "каталог" in categories[]->title)
+    ]
       | order(publishedAt desc)
       {
         _id,
         title,
         slug,
         publishedAt,
+        hashtags,
+        hashtag,
         "author": author->name,
         "authorImage": author->image.asset->url,
         "categories": categories[]->title,
+        postStyle,
         "mainImage": mainImage.asset->url,
         body[] {
           ...,
@@ -61,7 +108,7 @@ export default async function BlogPage() {
   return (
     <main className="max-w-[1440px] mx-auto px-4 py-8 sm:px-6 sm:py-10">
       <h1 className="mb-10 text-center text-4xl font-bold text-gray-900">
-        Наші поради
+        Каталог
       </h1>
 
       {posts.length === 0 ? (
@@ -80,92 +127,21 @@ export default async function BlogPage() {
                 .slice(0, 140) || "";
 
             return (
-              <article
+              <PostCatalogCard
                 key={post._id}
-                className={`${
-                  isFeatured ? "lg:col-span-6" : "lg:col-span-4"
-                }`}
-              >
-                <Link
-                  href={`/post/${post.slug.current}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex h-full flex-col"
-                >
-                  {post.mainImage && (
-                    <div
-                      className={`relative block w-full overflow-hidden rounded-lg ${
-                        isFeatured ? "h-64 sm:h-72 lg:h-96" : "h-72 sm:h-80 lg:h-[430px]"
-                      }`}
-                    >
-                      <Image
-                        src={post.mainImage}
-                        alt={post.title}
-                        fill
-                        sizes={
-                          isFeatured
-                            ? "(max-width: 1024px) 100vw, 700px"
-                            : "(max-width: 1024px) 100vw, 450px"
-                        }
-                        className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                      />
-                    </div>
-                  )}
-
-                  <div className="mt-5 flex flex-col">
-                    {post.categories?.length ? (
-                      <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-                        {post.categories.slice(0, 2).map((cat, i) => (
-                          <span
-                            key={`${post._id}-cat-${cat}`}
-                            className={`text-xs font-semibold uppercase tracking-[0.08em] ${
-                              categoryColors[i % categoryColors.length]
-                            }`}
-                          >
-                            {cat}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null}
-
-                    <h2 className="min-h-[60px] text-[24px] font-bold leading-tight text-gray-800 overflow-hidden [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]">
-                      {post.title}
-                    </h2>
-
-                    {excerpt && (
-                      <p className="mt-4 text-lg leading-relaxed text-gray-700 overflow-hidden text-ellipsis whitespace-nowrap">
-                        {excerpt}
-                      </p>
-                    )}
-
-                    <div className="mt-5 flex items-center gap-3 text-sm text-gray-500">
-                      {post.authorImage ? (
-                        <div className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full">
-                          <Image
-                            src={post.authorImage}
-                            alt={post.author ?? "author"}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-300 text-[10px] font-semibold text-gray-700">
-                          {(post.author ?? "A").slice(0, 1).toUpperCase()}
-                        </span>
-                      )}
-                      <span className="font-medium text-gray-600">
-                        {post.author ?? "Author"}
-                      </span>
-                      {post.publishedAt ? (
-                        <>
-                          <span className="text-gray-400">•</span>
-                          <span>{formatDate(post.publishedAt)}</span>
-                        </>
-                      ) : null}
-                    </div>
-                  </div>
-                </Link>
-              </article>
+                id={post._id}
+                title={post.title}
+                slug={post.slug.current}
+                categories={post.categories}
+                primaryHashtag={getPrimaryHashtag(post)}
+                ratingHashtags={getRatingHashtags(post)}
+                author={post.author}
+                authorImage={post.authorImage}
+                mainImage={post.mainImage}
+                excerpt={excerpt}
+                publishedAtText={formatDate(post.publishedAt)}
+                isFeatured={isFeatured}
+              />
             );
           })}
         </div>
