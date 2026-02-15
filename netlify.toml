@@ -1,0 +1,13 @@
+[build]
+  base = "frontend"
+  command = "npm ci --include=optional && npm run build"
+  publish = ".next"
+
+[functions]
+  node_bundler = "esbuild"
+
+[build.environment]
+  NODE_VERSION = "24.11.0"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
