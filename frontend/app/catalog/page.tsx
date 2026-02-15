@@ -53,7 +53,7 @@ export default async function TipsPage() {
 
   return (
     <main className="bg-[#cfe0ec] py-10 sm:py-14">
-      <section className="mx-auto max-w-[1100px] px-4 sm:px-6">
+      <section className="mx-auto w-full max-w-[1100px] px-3 sm:px-4 md:px-6">
         <h1 className={`${headingFont.className} mb-10 text-center text-6xl uppercase leading-[0.9] text-gray-950 sm:mb-12 sm:text-7xl`}>
           Поради
         </h1>

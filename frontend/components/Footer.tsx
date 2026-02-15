@@ -4,10 +4,10 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-gray-200 bg-white mt-8">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col sm:flex-row gap-4 sm:gap-0 items-start sm:items-center justify-between text-sm text-gray-500">
+      <div className="max-w-[1440px] mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-12 py-6 md:py-7 lg:py-8 flex flex-col md:flex-row gap-4 md:gap-0 items-start md:items-center justify-between text-sm text-gray-500">
         <div>
           <div className="font-semibold text-gray-700">UaRP</div>
-          <div className="text-xs sm:text-sm">
+          <div className="text-xs md:text-sm">
             Простір для українськомовних текстових рольових ігор.
           </div>
           <div className="mt-1 text-xs">
@@ -15,7 +15,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs sm:text-sm">
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs md:text-sm">
           {/* Підстав свої реальні посилання замість # */}
           <a
             href="mailto:team@uaroleplay.com"

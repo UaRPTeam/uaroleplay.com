@@ -14,7 +14,7 @@ const heroBodyFont = Manrope({
 export default function Home() {
   return (
     <section
-      className="relative min-h-[70vh] w-full overflow-hidden rounded-3xl bg-cover bg-center bg-no-repeat"
+      className="relative min-h-[70vh] w-full overflow-hidden rounded-none md:rounded-3xl bg-cover bg-center bg-no-repeat"
       style={{
         backgroundImage:
           "linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url('/images/hero.jpeg')",
@@ -39,7 +39,7 @@ export default function Home() {
             настрій, знайти співролів і поділитися власним всесвітом.
           </p>
         </div>
-        <div className="absolute inset-x-0 bottom-6 flex items-end justify-between px-6 sm:bottom-8 sm:px-10">
+        <div className="absolute inset-x-0 bottom-6 flex flex-col items-stretch gap-3 px-4 sm:bottom-8 sm:flex-row sm:items-end sm:justify-between sm:px-10">
           <Link
             href="/post"
             className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
