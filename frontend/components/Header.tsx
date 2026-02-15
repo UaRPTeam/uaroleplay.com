@@ -34,10 +34,13 @@ export default function Header() {
             Головна
           </Link>
           <Link href="/post" className={linkClass("/post")} aria-current={pathname.startsWith("/post") ? "page" : undefined}>
-            Поради
+            Каталог
           </Link>
           <Link href="/catalog" className={linkClass("/catalog")} aria-current={pathname.startsWith("/catalog") ? "page" : undefined}>
-            Каталог
+            Поради
+          </Link>
+          <Link href="/contacts" className={linkClass("/contacts")} aria-current={pathname.startsWith("/contacts") ? "page" : undefined}>
+            Долучитись
           </Link>
           <Link href="/about" className={linkClass("/about")} aria-current={pathname.startsWith("/about") ? "page" : undefined}>
             Що таке ТРІ?
