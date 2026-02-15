@@ -1,5 +1,5 @@
 export default function Home() {
-  const comingSoonText = "Comming soon ...";
+  const comingSoonText = "Coming soon ...";
 
   return (
     <section
@@ -12,7 +12,8 @@ export default function Home() {
             className="text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl lg:text-7xl"
             style={{
               textShadow: "0 2px 12px rgba(255,255,255,0.55)",
-              animation: "heroFadeUp 900ms ease-out both, heroSoftPulse 3s ease-in-out infinite",
+              animation:
+                "heroFadeUp 900ms ease-out both, heroSoftPulse 3s ease-in-out infinite",
             }}
           >
             UaRP
