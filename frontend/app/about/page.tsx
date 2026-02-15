@@ -6,7 +6,7 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="max-w-[1440px] mx-auto py-12 px-4">
+    <main className="max-w-[1440px] mx-auto w-full py-12 px-3 sm:px-4 md:px-6 lg:px-12">
       <h1 className="text-3xl font-bold mb-6">Ласкаво просимо до UaRP</h1>
       <p className="mb-4">
         Вітаємо у <strong>UaRP</strong> — домівці для тих, хто творить історії.

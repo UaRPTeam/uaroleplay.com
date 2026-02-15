@@ -31,7 +31,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-gray-900`}
       >
         <Header />
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-10 sm:py-14">
+        <div className="max-w-[1440px] mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-12 py-8 md:py-10 lg:py-14">
           {children}
         </div>
         <Footer />

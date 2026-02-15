@@ -13,47 +13,58 @@ type Post = {
   _id: string;
   title: string;
   slug: { current: string };
-  publishedAt?: string;
   hashtags?: Array<string | { category?: string; tags?: string[] }>;
   hashtag?: string;
-  author?: string;
-  authorImage?: string;
   categories?: string[];
   postStyle?: "tips" | "catalog";
   mainImage?: string;
   body?: Array<{ _type?: string; children?: Array<{ text?: string }> }>;
 };
 
-function formatDate(date?: string) {
-  if (!date) return "";
-  return new Date(date).toLocaleDateString("uk-UA", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-}
+type CatalogHashtag = {
+  tag: string;
+  categoryKey: string;
+};
 
-function getPrimaryHashtag(post: Post) {
+function getCatalogHashtags(post: Post) {
+  const collected: Array<CatalogHashtag & { priority: number; order: number }> = [];
+  let order = 0;
+
+  const addTag = (value: string | undefined, categoryKey: string, priority: number) => {
+    const tag = value?.trim();
+    if (!tag) return;
+    collected.push({ tag, categoryKey, priority, order });
+    order += 1;
+  };
+
   if (Array.isArray(post.hashtags)) {
     for (const item of post.hashtags) {
       if (typeof item === "string") {
-        const tag = item.trim();
-        if (tag) return tag;
+        addTag(item, "default", 1);
         continue;
       }
 
       if (item && Array.isArray(item.tags)) {
-        const tag = item.tags.find((entry) => entry?.trim());
-        if (tag) return tag.trim();
+        const categoryKey = item.category ?? "default";
+        const priority = categoryKey === "required" ? 0 : 1;
+        item.tags.forEach((tag) => addTag(tag, categoryKey, priority));
       }
     }
   }
 
-  if (post.hashtag?.trim()) {
-    return post.hashtag.trim();
-  }
+  addTag(post.hashtag, "default", 1);
 
-  return undefined;
+  const bestByTag = new Map<string, CatalogHashtag & { priority: number; order: number }>();
+  collected.forEach((entry) => {
+    const existing = bestByTag.get(entry.tag);
+    if (!existing || entry.priority < existing.priority || (entry.priority === existing.priority && entry.order < existing.order)) {
+      bestByTag.set(entry.tag, entry);
+    }
+  });
+
+  return Array.from(bestByTag.values())
+    .sort((a, b) => a.priority - b.priority || a.order - b.order)
+    .map(({ tag, categoryKey }) => ({ tag, categoryKey }));
 }
 
 function getRatingHashtags(post: Post) {
@@ -88,11 +99,8 @@ export default async function BlogPage() {
         _id,
         title,
         slug,
-        publishedAt,
         hashtags,
         hashtag,
-        "author": author->name,
-        "authorImage": author->image.asset->url,
         "categories": categories[]->title,
         postStyle,
         "mainImage": mainImage.asset->url,
@@ -106,7 +114,7 @@ export default async function BlogPage() {
   `);
 
   return (
-    <main className="max-w-[1440px] mx-auto px-4 py-8 sm:px-6 sm:py-10">
+    <main className="max-w-[1440px] mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-12 py-8 md:py-10">
       <h1 className="mb-10 text-center text-4xl font-bold text-gray-900">
         Каталог
       </h1>
@@ -117,6 +125,7 @@ export default async function BlogPage() {
         <div className="grid grid-cols-1 gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-12">
           {posts.map((post, index) => {
             const isFeatured = index < 2;
+            const excerptLimit = isFeatured ? 240 : 140;
             const excerpt =
               post.body
                 ?.filter((block) => block._type === "block")
@@ -124,7 +133,7 @@ export default async function BlogPage() {
                   (block.children ?? []).map((child) => child.text ?? "").join(" ")
                 )
                 .join(" ")
-                .slice(0, 140) || "";
+                .slice(0, excerptLimit) || "";
 
             return (
               <PostCatalogCard
@@ -133,13 +142,10 @@ export default async function BlogPage() {
                 title={post.title}
                 slug={post.slug.current}
                 categories={post.categories}
-                primaryHashtag={getPrimaryHashtag(post)}
+                hashtags={getCatalogHashtags(post)}
                 ratingHashtags={getRatingHashtags(post)}
-                author={post.author}
-                authorImage={post.authorImage}
                 mainImage={post.mainImage}
                 excerpt={excerpt}
-                publishedAtText={formatDate(post.publishedAt)}
                 isFeatured={isFeatured}
               />
             );
