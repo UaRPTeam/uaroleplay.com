@@ -18,7 +18,7 @@ export default function Footer() {
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs sm:text-sm">
           {/* Підстав свої реальні посилання замість # */}
           <a
-            href="#"
+            href="https://t.me/poshuk_ukrroleplay"
             target="_blank"
             rel="noreferrer"
             className={linkClass}
@@ -30,7 +30,7 @@ export default function Footer() {
             TG-канал
           </a>
           <a
-            href="#"
+            href="https://t.me/ukrroleplay_chat"
             target="_blank"
             rel="noreferrer"
             className={linkClass}
@@ -41,9 +41,9 @@ export default function Footer() {
             Чат
           </a>
           <a
-            href="#"
+            href="https://www.tiktok.com/@poshuk_ukrroleplay?_t=ZN-90LxszgauHa&_r=1"
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className={linkClass}
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
@@ -53,7 +53,7 @@ export default function Footer() {
             TikTok
           </a>
           <a
-            href="#"
+            href="https://x.com/poshukroleplay"
             target="_blank"
             rel="noreferrer"
             className={linkClass}
@@ -64,7 +64,7 @@ export default function Footer() {
             Twitter / X
           </a>
           <a
-            href="#"
+            href="https://send.monobank.ua/jar/3euvoXJAfu"
             target="_blank"
             rel="noreferrer"
             className={linkClass}
