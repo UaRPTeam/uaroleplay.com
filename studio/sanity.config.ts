@@ -2,7 +2,6 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './schemaTypes'
-import {hidePostAction} from './actions/hidePostAction'
 
 export default defineConfig({
   name: 'default',
@@ -12,16 +11,6 @@ export default defineConfig({
   dataset: 'production',
 
   plugins: [structureTool(), visionTool()],
-
-  document: {
-    actions: (prev, context) => {
-      if (context.schemaType !== 'post') {
-        return prev
-      }
-
-      return prev.map((action) => (action.action === 'unpublish' ? hidePostAction : action))
-    },
-  },
 
   schema: {
     types: schemaTypes,

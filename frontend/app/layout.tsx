@@ -27,13 +27,12 @@ export default function RootLayout({
   return (
     <html lang="uk">
       <body
-        suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} antialiased text-gray-900`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 text-gray-900`}
       >
         <Header />
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-10 sm:py-14">
+        <main className="max-w-[1440px] mx-auto px-4 sm:px-6 py-10 sm:py-14">
           {children}
-        </div>
+        </main>
         <Footer />
       </body>
     </html>

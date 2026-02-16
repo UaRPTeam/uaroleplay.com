@@ -18,17 +18,7 @@ export default function Footer() {
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs sm:text-sm">
           {/* Підстав свої реальні посилання замість # */}
           <a
-            href="mailto:team@uaroleplay.com"
-            className={linkClass}
-          >
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
-              <path d="M3 7.5h18v9H3z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-              <path d="M3 8l9 7 9-7" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-            </svg>
-            team@uaroleplay.com
-          </a>
-          <a
-            href="https://t.me/poshuk_ukrroleplay"
+            href="#"
             target="_blank"
             rel="noreferrer"
             className={linkClass}
@@ -40,7 +30,7 @@ export default function Footer() {
             TG-канал
           </a>
           <a
-            href="https://t.me/ukrroleplay_chat"
+            href="#"
             target="_blank"
             rel="noreferrer"
             className={linkClass}
@@ -51,9 +41,9 @@ export default function Footer() {
             Чат
           </a>
           <a
-            href="https://www.tiktok.com/@poshuk_ukrroleplay?_t=ZN-90LxszgauHa&_r=1"
+            href="#"
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noreferrer"
             className={linkClass}
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
@@ -63,7 +53,7 @@ export default function Footer() {
             TikTok
           </a>
           <a
-            href="https://x.com/poshukroleplay"
+            href="#"
             target="_blank"
             rel="noreferrer"
             className={linkClass}
@@ -74,7 +64,7 @@ export default function Footer() {
             Twitter / X
           </a>
           <a
-            href="https://send.monobank.ua/jar/3euvoXJAfu"
+            href="#"
             target="_blank"
             rel="noreferrer"
             className={linkClass}
