@@ -17,6 +17,7 @@ body {
   width: 100%;
   overflow-x: clip;
   overflow-anchor: none;
+  overscroll-behavior-y: none;
 }
 
 body {
