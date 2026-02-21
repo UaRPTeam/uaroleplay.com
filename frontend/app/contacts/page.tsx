@@ -1,6 +1,7 @@
 import groq from "groq";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import imageUrlBuilder from "@sanity/image-url";
+import type { TypedObject } from "@portabletext/types";
 import type { CSSProperties } from "react";
 import { client } from "../../client";
 
@@ -27,7 +28,7 @@ type PageBodyImage = {
 type JoinPageDocument = {
   title?: string;
   backgroundImage?: string;
-  body?: Array<Record<string, unknown>>;
+  body?: TypedObject[];
 };
 
 const imageBuilder = imageUrlBuilder(client);

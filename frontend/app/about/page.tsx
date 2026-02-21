@@ -1,6 +1,7 @@
 import groq from "groq";
 import imageUrlBuilder from "@sanity/image-url";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
+import type { TypedObject } from "@portabletext/types";
 import type { CSSProperties } from "react";
 import { Amatic_SC } from "next/font/google";
 import { client } from "../../client";
@@ -30,7 +31,7 @@ type PageBodyImage = {
 type AboutPageDocument = {
   title?: string;
   backgroundImage?: string;
-  body?: Array<Record<string, unknown>>;
+  body?: TypedObject[];
 };
 
 type Post = {
@@ -41,7 +42,7 @@ type Post = {
   postStyle?: "tips" | "catalog" | "about";
   pinToTop?: boolean;
   mainImage?: string;
-  body?: Array<{ _type?: string; children?: Array<{ text?: string }> }>;
+  body?: Array<{ _type: string; children?: Array<{ text?: string }> }>;
 };
 
 type PinnedPostsSettings = {

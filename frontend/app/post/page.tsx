@@ -19,7 +19,7 @@ type Post = {
   postStyle?: "tips" | "catalog" | "about";
   pinToTop?: boolean;
   mainImage?: string;
-  body?: Array<{ _type?: string; children?: Array<{ text?: string }> }>;
+  body?: Array<{ _type: string; children?: Array<{ text?: string }> }>;
 };
 
 type PinnedPostsSettings = {

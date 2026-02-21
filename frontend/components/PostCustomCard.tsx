@@ -7,7 +7,7 @@ import type { CSSProperties } from "react";
 import { client } from "../client";
 
 type PortableTextNode = {
-  _type?: string;
+  _type: string;
   children?: Array<{ text?: string }>;
   align?: "left" | "center" | "right";
   widthPercent?: number;
