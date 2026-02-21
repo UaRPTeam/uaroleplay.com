@@ -13,26 +13,12 @@ type Bubble = {
   alpha: number;
 };
 
-type Fish = {
-  x: number;
-  y: number;
-  size: number;
-  depth: number;
-  vx: number;
-  phase: number;
-  sway: number;
-  alpha: number;
-  dir: 1 | -1;
-  base: string;
-  shade: string;
-  highlight: string;
-};
-
 export default function WaterBubblesBackground() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rafRef = useRef<number | null>(null);
   const bubblesRef = useRef<Bubble[]>([]);
-  const fishRef = useRef<Fish[]>([]);
+  const viewportRef = useRef({ w: 0, h: 0 });
+  const lastSizeRef = useRef({ w: 0, h: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -51,9 +37,15 @@ export default function WaterBubblesBackground() {
     const hsla = (h: number, s: number, l: number, a: number) =>
       `hsla(${h}, ${s}%, ${l}%, ${a})`;
 
+    const getViewport = () => {
+      const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+      const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+      return { w, h };
+    };
+
     const resize = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const { w, h } = getViewport();
+      viewportRef.current = { w, h };
       canvas.width = Math.floor(w * dpr);
       canvas.height = Math.floor(h * dpr);
       canvas.style.width = `${w}px`;
@@ -62,8 +54,7 @@ export default function WaterBubblesBackground() {
     };
 
     const makeBubbles = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const { w, h } = viewportRef.current;
       const count = Math.round((w * h) / 85000);
 
       const next: Bubble[] = [];
@@ -83,47 +74,8 @@ export default function WaterBubblesBackground() {
       bubblesRef.current = next;
     };
 
-    const makeFish = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      const count = Math.max(6, Math.min(12, Math.round((w * h) / 190000)));
-
-      const palettes = [
-        { base: "#EEA85D", shade: "#C9873E", highlight: "#FFE4B8" },
-        { base: "#F5C66C", shade: "#CF9A42", highlight: "#FFEDC8" },
-        { base: "#EFA17D", shade: "#C67653", highlight: "#FFDCCF" },
-        { base: "#E7BF72", shade: "#BC9345", highlight: "#FFF2CA" },
-      ];
-      const next: Fish[] = [];
-
-      for (let i = 0; i < count; i += 1) {
-        const dir: 1 | -1 = Math.random() > 0.5 ? 1 : -1;
-        const depth = Math.random();
-        const size = 16 + Math.random() * 40 * (0.6 + depth);
-        const p = palettes[Math.floor(Math.random() * palettes.length)];
-
-        next.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          size,
-          depth,
-          vx: (0.18 + Math.random() * 0.45) * dir,
-          phase: Math.random() * Math.PI * 2,
-          sway: 12 + Math.random() * 22,
-          alpha: 0.45 + depth * 0.4,
-          dir,
-          base: p.base,
-          shade: p.shade,
-          highlight: p.highlight,
-        });
-      }
-
-      fishRef.current = next;
-    };
-
     const drawWaterLayer = (t: number) => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      const { w, h } = viewportRef.current;
 
       const g = ctx.createLinearGradient(0, 0, 0, h);
       g.addColorStop(0, hsla(WATER_H, 70, 97, 1));
@@ -191,100 +143,18 @@ export default function WaterBubblesBackground() {
       ctx.globalAlpha = 1;
     };
 
-    const drawFish = (f: Fish, t: number) => {
-      const bob = Math.sin(t / 1300 + f.phase) * (f.sway * 0.07);
-      const sway = Math.sin(t / 900 + f.phase) * 0.12;
-
-      const x = f.x;
-      const y = f.y + bob;
-
-      const bodyW = f.size * 1.9;
-      const bodyH = f.size * 1.05;
-
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.scale(f.dir, 1);
-      ctx.rotate(sway * 0.15);
-
-      // 1) водяний ореол
-      ctx.globalAlpha = 0.10;
-      ctx.beginPath();
-      ctx.ellipse(0, 0, bodyW * 0.65, bodyH * 0.65, 0, 0, Math.PI * 2);
-      ctx.fillStyle = "#ffffff";
-      ctx.fill();
-
-      // 2) тіло
-      ctx.globalAlpha = 0.88;
-      ctx.beginPath();
-      ctx.ellipse(0, 0, bodyW * 0.5, bodyH * 0.5, 0, 0, Math.PI * 2);
-      ctx.fillStyle = f.base;
-      ctx.fill();
-
-      // м’який “водяний” контур
-      ctx.globalAlpha = 0.25;
-      ctx.lineWidth = 1.2;
-      ctx.strokeStyle = "rgba(20, 45, 70, 0.35)";
-      ctx.beginPath();
-      ctx.ellipse(0, 0, bodyW * 0.5, bodyH * 0.5, 0, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // 3) хвіст (тримаємо альфу високою)
-      ctx.globalAlpha = 0.88;
-      const wiggle = Math.sin(t / 140 + f.phase) * 0.35;
-
-      ctx.beginPath();
-      ctx.moveTo(-bodyW * 0.55, 0);
-      ctx.lineTo(-bodyW * 0.95, -bodyH * (0.45 + wiggle));
-      ctx.lineTo(-bodyW * 0.95, bodyH * (0.45 - wiggle));
-      ctx.closePath();
-      ctx.fillStyle = f.shade;
-      ctx.fill();
-
-      // 4) плавник
-      ctx.globalAlpha = 0.72;
-      ctx.beginPath();
-      ctx.moveTo(-bodyW * 0.05, -bodyH * 0.18);
-      ctx.quadraticCurveTo(bodyW * 0.1, -bodyH * 0.55, bodyW * 0.25, -bodyH * 0.15);
-      ctx.closePath();
-      ctx.fillStyle = f.base;
-      ctx.fill();
-
-      // 5) блік
-      ctx.globalAlpha = 0.32;
-      ctx.beginPath();
-      ctx.ellipse(bodyW * 0.18, -bodyH * 0.18, bodyW * 0.22, bodyH * 0.14, -0.3, 0, Math.PI * 2);
-      ctx.fillStyle = "#ffffff";
-      ctx.fill();
-
-      // 6) око
-      ctx.globalAlpha = 0.9;
-      ctx.beginPath();
-      ctx.arc(bodyW * 0.25, -bodyH * 0.05, Math.max(2, f.size * 0.06), 0, Math.PI * 2);
-      ctx.fillStyle = "#1b1b1b";
-      ctx.fill();
-
-      ctx.restore();
-    };
-
     const tick = (t: number) => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+      if (!prefersReducedMotion) {
+        if (t - lastT < 33) {
+          rafRef.current = requestAnimationFrame(tick);
+          return;
+        }
+        lastT = t;
+      }
+
+      const { w, h } = viewportRef.current;
 
       drawWaterLayer(t);
-
-      for (const f of fishRef.current) {
-        // швидше і "живіше"
-        f.x += f.vx * 1.35;
-        f.y += Math.sin(t / 1400 + f.phase) * 0.18;
-
-        if (f.dir === 1 && f.x - 110 > w) f.x = -110;
-        if (f.dir === -1 && f.x + 110 < 0) f.x = w + 110;
-
-        if (f.y < -90) f.y = h + 90;
-        if (f.y > h + 90) f.y = -90;
-
-        drawFish(f, t);
-      }
 
       for (const b of bubblesRef.current) {
         b.y -= b.vy;
@@ -303,23 +173,38 @@ export default function WaterBubblesBackground() {
       if (!prefersReducedMotion) rafRef.current = requestAnimationFrame(tick);
     };
 
+    let lastT = 0;
+
     const onResize = () => {
+      const prev = lastSizeRef.current;
+      const next = getViewport();
+
+      const dw = Math.abs(next.w - prev.w);
+      const dh = Math.abs(next.h - prev.h);
+      const isSmallMobileHeightJitter = dw < 40 && dh < 120;
+
       resize();
-      makeBubbles();
-      makeFish();
+
+      if (!isSmallMobileHeightJitter) {
+        makeBubbles();
+        lastSizeRef.current = next;
+      }
+
       if (prefersReducedMotion) tick(0);
     };
 
     resize();
+    lastSizeRef.current = getViewport();
     makeBubbles();
-    makeFish();
 
     tick(0);
     if (!prefersReducedMotion) rafRef.current = requestAnimationFrame(tick);
 
     window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
     return () => {
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
