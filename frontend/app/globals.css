@@ -12,19 +12,22 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html,
+body {
+  width: 100%;
+  overflow-x: clip;
+  overflow-anchor: none;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
 }
 
 html {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
 }
 
 @keyframes heroFadeUp {
@@ -70,4 +73,39 @@ html {
   50% {
     transform: translateY(-8px);
   }
+}
+
+.pt-list-bullet {
+  list-style: none;
+  padding-left: 0;
+}
+
+.pt-list-bullet > li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.pt-list-bullet > li::before {
+  content: "•";
+  flex: 0 0 auto;
+  line-height: 1.2;
+}
+
+.portable-richtext::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.about-page .text-gray-900,
+.about-page .text-gray-950,
+.about-page .text-gray-800,
+.about-page .text-gray-700,
+.about-page .text-gray-600 {
+  color: #0b1b2b !important;
+}
+
+.about-page .portable-richtext a {
+  color: #123a63 !important;
 }

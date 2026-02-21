@@ -16,9 +16,14 @@ type Post = {
   slug: { current: string };
   publishedAt?: string;
   categories?: string[];
-  postStyle?: "tips" | "catalog";
+  postStyle?: "tips" | "catalog" | "about";
+  pinToTop?: boolean;
   mainImage?: string;
-  body?: Array<{ _type?: string; children?: Array<{ text?: string }> }>;
+  body?: Array<{ _type: string; children?: Array<{ text?: string }> }>;
+};
+
+type PinnedPostsSettings = {
+  tipsPinnedPosts?: Array<{ _ref?: string }>;
 };
 
 const headingFont = Amatic_SC({
@@ -27,29 +32,46 @@ const headingFont = Amatic_SC({
 });
 
 export default async function TipsPage() {
-  const posts = await client.fetch<Post[]>(groq`
-    *[
-      _type == "post" &&
-      defined(slug.current) &&
-      (postStyle == "tips" || "Поради" in categories[]->title || "поради" in categories[]->title)
-    ]
-      | order(publishedAt desc)
-      {
-        _id,
-        title,
-        slug,
-        publishedAt,
-        "categories": categories[]->title,
-        postStyle,
-        "mainImage": mainImage.asset->url,
-        body[] {
-          ...,
-          children[] {
-            text
-          }
-        }
+  const [pinnedSettings, posts] = await Promise.all([
+    client.fetch<PinnedPostsSettings | null>(groq`
+      *[_type == "pinnedPostsSettings" && _id == "pinnedPostsSettings"][0]{
+        tipsPinnedPosts
       }
-  `);
+    `),
+    client.fetch<Post[]>(groq`
+      *[
+              _type == "post" &&
+        defined(slug.current) &&
+        (postStyle == "tips" || "Поради" in categories[]->title || "поради" in categories[]->title)
+      ]
+        | order(publishedAt desc)
+        {
+          _id,
+          title,
+          slug,
+          publishedAt,
+          "categories": categories[]->title,
+          postStyle,
+          pinToTop,
+          "mainImage": mainImage.asset->url,
+              body[] {
+                ...
+              }
+            }
+    `),
+  ]);
+
+  const pinnedOrder = (pinnedSettings?.tipsPinnedPosts ?? [])
+    .map((item) => item?._ref)
+    .filter((id): id is string => Boolean(id));
+  const postsById = new Map(posts.map((post) => [post._id, post]));
+  const orderedPinnedPosts = pinnedOrder
+    .map((id) => postsById.get(id))
+    .filter((post): post is Post => Boolean(post && post.pinToTop));
+  const orderedPinnedIds = new Set(orderedPinnedPosts.map((post) => post._id));
+  const remainingPinnedPosts = posts.filter((post) => post.pinToTop && !orderedPinnedIds.has(post._id));
+  const regularPosts = posts.filter((post) => !post.pinToTop);
+  const sortedPosts = [...orderedPinnedPosts, ...remainingPinnedPosts, ...regularPosts];
 
   return (
     <main className="bg-[#cfe0ec] py-10 sm:py-14">
@@ -58,25 +80,13 @@ export default async function TipsPage() {
           Поради
         </h1>
 
-        {posts.length === 0 ? (
+        {sortedPosts.length === 0 ? (
           <p className="text-center text-gray-600">
             У категорії «Поради» поки немає постів.
           </p>
         ) : (
           <div className="space-y-4 sm:space-y-6">
-            {posts.map((post, index) => {
-              const paragraphs =
-                post.body
-                  ?.filter((block) => block._type === "block")
-                  .map((block) =>
-                    (block.children ?? [])
-                      .map((child) => child.text ?? "")
-                      .join(" ")
-                      .trim()
-                  )
-                  .filter(Boolean)
-                  .slice(0, 3) ?? [];
-
+            {sortedPosts.map((post) => {
               return (
                 <PostCustomCard
                   key={post._id}
@@ -84,9 +94,8 @@ export default async function TipsPage() {
                   title={post.title}
                   slug={post.slug.current}
                   mainImage={post.mainImage}
-                  paragraphs={paragraphs}
+                  body={post.body}
                   metaText={post.publishedAt ? new Date(post.publishedAt).toLocaleDateString("uk-UA") : undefined}
-                  imageSide={index % 2 === 0 ? "right" : "left"}
                 />
               );
             })}

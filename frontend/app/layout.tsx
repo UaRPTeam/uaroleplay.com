@@ -28,12 +28,14 @@ export default function RootLayout({
     <html lang="uk">
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} antialiased text-gray-900`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-[100dvh] flex flex-col antialiased text-gray-900`}
       >
         <Header />
-        <div className="max-w-[1440px] mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-12 py-8 md:py-10 lg:py-14">
-          {children}
-        </div>
+        <main className="flex-1 pb-8">
+          <div className="max-w-[1440px] mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-12 py-8 md:py-10 lg:py-14">
+            {children}
+          </div>
+        </main>
         <Footer />
       </body>
     </html>

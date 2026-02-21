@@ -29,7 +29,7 @@ export default function Footer() {
   }, [copied]);
 
   return (
-    <footer className="border-t border-gray-200 bg-white mt-8">
+    <footer className="relative border-t border-gray-200 bg-white">
       <div className="max-w-[1440px] mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-12 py-6 md:py-7 lg:py-8 flex flex-col md:flex-row gap-4 md:gap-0 items-start md:items-center justify-between text-sm text-gray-500">
         <div>
           <div className="font-semibold text-gray-700">UaRP</div>
@@ -121,7 +121,7 @@ export default function Footer() {
       </div>
 
       {copied ? (
-        <div className="fixed bottom-5 left-1/2 z-[70] -translate-x-1/2 rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-lg">
+        <div className="absolute left-1/2 top-0 z-[70] -translate-x-1/2 -translate-y-[calc(100%+0.75rem)] rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-lg">
           Пошту скопійовано
         </div>
       ) : null}

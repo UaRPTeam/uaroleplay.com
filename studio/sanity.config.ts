@@ -3,6 +3,7 @@ import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './schemaTypes'
 import {hidePostAction} from './actions/hidePostAction'
+import './studio.css'
 
 export default defineConfig({
   name: 'default',
@@ -11,7 +12,31 @@ export default defineConfig({
   projectId: 'ta87y5fo',
   dataset: 'production',
 
-  plugins: [structureTool(), visionTool()],
+  plugins: [
+    structureTool({
+      structure: (S) =>
+        S.list()
+          .title('Контент')
+          .items([
+            S.listItem()
+              .title('Що таке ТРІ')
+              .id('aboutPage')
+              .child(S.document().schemaType('aboutPage').documentId('aboutPage')),
+            S.listItem()
+              .title('Долучитись')
+              .id('joinPage')
+              .child(S.document().schemaType('joinPage').documentId('joinPage')),
+            S.listItem()
+              .title('Закріплені пости')
+              .id('pinnedPostsSettings')
+              .child(S.document().schemaType('pinnedPostsSettings').documentId('pinnedPostsSettings')),
+            ...S.documentTypeListItems().filter(
+              (item) => !['aboutPage', 'joinPage', 'pinnedPostsSettings'].includes(item.getId() ?? ''),
+            ),
+          ]),
+    }),
+    visionTool(),
+  ],
 
   document: {
     actions: (prev, context) => {
