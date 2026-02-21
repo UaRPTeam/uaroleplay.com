@@ -34,8 +34,9 @@ export default function Header() {
   }, [isMenuOpen]);
 
   return (
-    <header className="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-[1440px] mx-auto w-full flex items-center justify-between px-3 sm:px-4 md:px-6 lg:px-12 py-3 md:py-4">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-gray-200 bg-white">
+      <div className="pointer-events-none absolute inset-0 bg-white/75 backdrop-blur-md" />
+      <div className="relative max-w-[1440px] mx-auto w-full flex items-center justify-between px-3 sm:px-4 md:px-6 lg:px-12 py-3 md:py-4">
         <Link href="/" className="flex items-center gap-2">
           {/* Якщо є лого-котик, поклади його в /public/logo.png і розкоментуй */}
           <Image src="/logo.png" alt="UaRP" width={32} height={32} className="h-8 w-8 rounded-full" />
