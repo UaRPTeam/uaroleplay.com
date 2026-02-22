@@ -144,13 +144,12 @@ export default function WaterBubblesBackground() {
     };
 
     const tick = (t: number) => {
-      if (!prefersReducedMotion) {
-        if (t - lastT < 33) {
-          rafRef.current = requestAnimationFrame(tick);
-          return;
-        }
-        lastT = t;
+      const frameInterval = prefersReducedMotion ? 80 : 33;
+      if (t - lastT < frameInterval) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
       }
+      lastT = t;
 
       const { w, h } = viewportRef.current;
 
@@ -170,7 +169,7 @@ export default function WaterBubblesBackground() {
         drawBubble(b, t);
       }
 
-      if (!prefersReducedMotion) rafRef.current = requestAnimationFrame(tick);
+      rafRef.current = requestAnimationFrame(tick);
     };
 
     let lastT = 0;
@@ -198,7 +197,7 @@ export default function WaterBubblesBackground() {
     makeBubbles();
 
     tick(0);
-    if (!prefersReducedMotion) rafRef.current = requestAnimationFrame(tick);
+    rafRef.current = requestAnimationFrame(tick);
 
     window.addEventListener("resize", onResize);
     window.addEventListener("orientationchange", onResize);

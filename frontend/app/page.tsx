@@ -41,16 +41,10 @@ export default function Home() {
         </div>
         <div className="absolute inset-x-0 bottom-6 flex flex-col items-stretch gap-3 px-4 sm:bottom-8 sm:flex-row sm:items-end sm:justify-between sm:px-10">
           <Link
-            href="/post"
+            href="/tips"
             className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
           >
             Читати гіди та статті
-          </Link>
-          <Link
-            href="/contacts"
-            className="inline-flex items-center justify-center rounded-lg border border-blue-300 bg-white/70 px-5 py-2.5 text-sm font-semibold text-blue-700 transition-colors hover:bg-blue-50"
-          >
-            Долучитися до спільноти
           </Link>
         </div>
       </div>
