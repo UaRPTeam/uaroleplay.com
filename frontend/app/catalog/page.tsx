@@ -74,8 +74,10 @@ export default async function TipsPage() {
   const sortedPosts = [...orderedPinnedPosts, ...remainingPinnedPosts, ...regularPosts];
 
   return (
-    <main className="bg-[#cfe0ec] py-10 sm:py-14">
-      <section className="mx-auto w-full max-w-[1100px] px-3 sm:px-4 md:px-6">
+    <>
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-30 bg-[#cfe0ec]" />
+      <main className="relative z-10 py-10 sm:py-14">
+        <section className="mx-auto w-full max-w-[1100px] px-3 sm:px-4 md:px-6">
         <h1 className={`${headingFont.className} mb-10 text-center text-6xl uppercase leading-[0.9] text-gray-950 sm:mb-12 sm:text-7xl`}>
           Поради
         </h1>
@@ -101,7 +103,8 @@ export default async function TipsPage() {
             })}
           </div>
         )}
-      </section>
-    </main>
+        </section>
+      </main>
+    </>
   );
 }

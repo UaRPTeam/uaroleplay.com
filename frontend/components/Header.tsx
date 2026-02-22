@@ -13,7 +13,6 @@ export default function Header() {
     { href: "/", label: "Головна" },
     { href: "/post", label: "Каталог" },
     { href: "/catalog", label: "Поради" },
-    { href: "/contacts", label: "Долучитись" },
     { href: "/about", label: "Що таке ТРІ?" },
   ];
 

@@ -29,7 +29,7 @@ export default function Footer() {
   }, [copied]);
 
   return (
-    <footer className="relative border-t border-gray-200 bg-white">
+    <footer className="relative mt-auto shrink-0 border-t border-gray-200 bg-white">
       <div className="max-w-[1440px] mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-12 py-6 md:py-7 lg:py-8 flex flex-col md:flex-row gap-4 md:gap-0 items-start md:items-center justify-between text-sm text-gray-500">
         <div>
           <div className="font-semibold text-gray-700">UaRP</div>

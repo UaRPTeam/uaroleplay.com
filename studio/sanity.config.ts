@@ -23,15 +23,11 @@ export default defineConfig({
               .id('aboutPage')
               .child(S.document().schemaType('aboutPage').documentId('aboutPage')),
             S.listItem()
-              .title('Долучитись')
-              .id('joinPage')
-              .child(S.document().schemaType('joinPage').documentId('joinPage')),
-            S.listItem()
               .title('Закріплені пости')
               .id('pinnedPostsSettings')
               .child(S.document().schemaType('pinnedPostsSettings').documentId('pinnedPostsSettings')),
             ...S.documentTypeListItems().filter(
-              (item) => !['aboutPage', 'joinPage', 'pinnedPostsSettings'].includes(item.getId() ?? ''),
+              (item) => !['aboutPage', 'pinnedPostsSettings'].includes(item.getId() ?? ''),
             ),
           ]),
     }),
