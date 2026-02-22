@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import type { CSSProperties } from "react";
 import { client } from "../../../client";
+import ImageGalleryCarousel, { type ImageGalleryCarouselValue } from "../../../components/ImageGalleryCarousel";
 
 export const revalidate = 0;
 
@@ -133,6 +134,10 @@ const portableTextComponents: PortableTextComponents = {
     },
   },
   types: {
+    imageGalleryCarousel: ({ value }) => {
+      const carousel = value as ImageGalleryCarouselValue;
+      return <ImageGalleryCarousel images={carousel.images} rounded={carousel.rounded !== false} />;
+    },
     image: ({ value }) => {
       const imageValue = value as PortableTextImage;
       const imageRef = imageValue?.asset?._ref;
@@ -266,7 +271,7 @@ export default async function PostDetailsPage({
       categoryByTag.set(item.tag, item.categoryKey);
     }
   });
-  const backHref = pageType === "catalog" ? "/post" : pageType === "about" ? "/about" : "/catalog";
+  const backHref = pageType === "catalog" ? "/catalog" : pageType === "about" ? "/about" : "/tips";
   const backLabel = pageType === "catalog" ? "← До каталогу" : pageType === "about" ? "← До сторінки ТРІ" : "← До порад";
   const categoryAccent =
     pageType === "catalog" ? "text-blue-600" : pageType === "about" ? "text-sky-700" : "text-emerald-600";

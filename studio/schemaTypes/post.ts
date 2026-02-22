@@ -215,6 +215,7 @@ export default defineType({
             ],
           },
         }),
+        defineArrayMember({type: 'imageGalleryCarousel'}),
         defineArrayMember({
           type: 'image',
           components: {

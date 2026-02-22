@@ -39,6 +39,7 @@ export default defineType({
             ],
           },
         }),
+        defineArrayMember({type: 'imageGalleryCarousel'}),
         defineArrayMember({type: 'image'}),
       ],
       validation: (Rule) => Rule.required().min(1),

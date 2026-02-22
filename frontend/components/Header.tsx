@@ -11,8 +11,8 @@ export default function Header() {
 
   const navLinks = [
     { href: "/", label: "Головна" },
-    { href: "/post", label: "Каталог" },
-    { href: "/catalog", label: "Поради" },
+    { href: "/tips", label: "Поради" },
+    { href: "/catalog", label: "Каталог" },
     { href: "/about", label: "Що таке ТРІ?" },
   ];
 

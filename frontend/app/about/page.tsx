@@ -5,6 +5,7 @@ import type { TypedObject } from "@portabletext/types";
 import type { CSSProperties } from "react";
 import { Amatic_SC } from "next/font/google";
 import { client } from "../../client";
+import ImageGalleryCarousel, { type ImageGalleryCarouselValue } from "../../components/ImageGalleryCarousel";
 import PostCustomCard from "../../components/PostCustomCard";
 import WaterBubblesBackground from "../../components/WaterBubblesBackground";
 
@@ -49,6 +50,11 @@ type PinnedPostsSettings = {
   aboutPinnedPosts?: Array<{ _ref?: string }>;
 };
 
+type PortableTextLikeBlock = TypedObject & {
+  _type?: string;
+  children?: Array<{ marks?: string[]; text?: string }>;
+};
+
 const imageBuilder = imageUrlBuilder(client);
 const headingFont = Amatic_SC({
   subsets: ["latin"],
@@ -77,6 +83,83 @@ const portableTextComponents: PortableTextComponents = {
         </p>
       );
     },
+    h1: ({ children, value }) => {
+      const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
+      return (
+        <h1
+          className={`${headingFont.className} mb-6 mt-10 text-6xl uppercase leading-[0.9] text-[#081421] sm:text-7xl`}
+          style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}
+        >
+          {children}
+        </h1>
+      );
+    },
+    h2: ({ children, value }) => {
+      const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
+      return (
+        <h2
+          className={`${headingFont.className} mb-5 mt-9 text-5xl uppercase leading-[0.9] text-[#081421]`}
+          style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}
+        >
+          {children}
+        </h2>
+      );
+    },
+    h3: ({ children, value }) => {
+      const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
+      return (
+        <h3
+          className={`${headingFont.className} mb-4 mt-8 text-4xl uppercase leading-[0.9] text-[#081421]`}
+          style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}
+        >
+          {children}
+        </h3>
+      );
+    },
+    h4: ({ children, value }) => {
+      const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
+      return (
+        <h4
+          className="mb-4 mt-7 text-2xl font-bold leading-tight text-[#081421] sm:text-3xl"
+          style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}
+        >
+          {children}
+        </h4>
+      );
+    },
+    h5: ({ children, value }) => {
+      const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
+      return (
+        <h5
+          className="mb-3 mt-6 text-xl font-semibold leading-tight text-[#081421] sm:text-2xl"
+          style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}
+        >
+          {children}
+        </h5>
+      );
+    },
+    h6: ({ children, value }) => {
+      const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
+      return (
+        <h6
+          className="mb-3 mt-5 text-lg font-semibold leading-tight text-[#081421] sm:text-xl"
+          style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}
+        >
+          {children}
+        </h6>
+      );
+    },
+    blockquote: ({ children, value }) => {
+      const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
+      return (
+        <blockquote
+          className="my-8 border-l-4 border-slate-400 pl-4 text-lg italic leading-8 text-[#0b1b2b]"
+          style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}
+        >
+          {children}
+        </blockquote>
+      );
+    },
   },
   marks: {
     alignLeft: ({ children }) => <>{children}</>,
@@ -85,6 +168,10 @@ const portableTextComponents: PortableTextComponents = {
     highlight: ({ children }) => <mark className="rounded bg-yellow-200 px-1 text-inherit">{children}</mark>,
   },
   types: {
+    imageGalleryCarousel: ({ value }) => {
+      const carousel = value as ImageGalleryCarouselValue;
+      return <ImageGalleryCarousel images={carousel.images} rounded={carousel.rounded !== false} />;
+    },
     image: ({ value }) => {
       const imageValue = value as PageBodyImage;
       const imageRef = imageValue?.asset?._ref;
@@ -166,6 +253,36 @@ export default async function AboutPage() {
   const remainingPinnedPosts = posts.filter((post) => post.pinToTop && !orderedPinnedIds.has(post._id));
   const regularPosts = posts.filter((post) => !post.pinToTop);
   const sortedPosts = [...orderedPinnedPosts, ...remainingPinnedPosts, ...regularPosts];
+  const pageBody = Array.isArray(page?.body) ? page.body : [];
+  const bodyWithoutCarousels: TypedObject[] = [];
+  const bottomCarouselGroups: Array<{
+    leadBlocks: TypedObject[];
+    carousel: TypedObject & ImageGalleryCarouselValue;
+  }> = [];
+
+  for (const block of pageBody) {
+    if (block?._type !== "imageGalleryCarousel") {
+      bodyWithoutCarousels.push(block);
+      continue;
+    }
+
+    const leadBlocks: TypedObject[] = [];
+    const lastKept = bodyWithoutCarousels[bodyWithoutCarousels.length - 1] as PortableTextLikeBlock | undefined;
+    const lastAlign = getBlockAlign(lastKept);
+    const hasVisibleText = Boolean(
+      (lastKept?.children ?? []).some((child) => (child?.text ?? "").trim().length > 0),
+    );
+
+    if (lastKept?._type === "block" && lastAlign === "center" && hasVisibleText) {
+      const movedLead = bodyWithoutCarousels.pop();
+      if (movedLead) leadBlocks.push(movedLead);
+    }
+
+    bottomCarouselGroups.push({
+      leadBlocks,
+      carousel: block as TypedObject & ImageGalleryCarouselValue,
+    });
+  }
 
   return (
     <>
@@ -186,9 +303,9 @@ export default async function AboutPage() {
           {page?.title ?? "Що таке ТРІ"}
         </h1>
 
-        <div className="mx-auto max-w-[780px]">
-          {page?.body?.length ? (
-            <PortableText value={page.body} components={portableTextComponents} />
+        <div className="mx-auto w-full max-w-[1100px]">
+          {bodyWithoutCarousels.length ? (
+            <PortableText value={bodyWithoutCarousels} components={portableTextComponents} />
           ) : null}
         </div>
 
@@ -211,7 +328,24 @@ export default async function AboutPage() {
             </div>
           </section>
         ) : null}
+
       </section>
+      {bottomCarouselGroups.length ? (
+        <section className="mt-14 border-t border-white/30 pt-10 sm:pt-12">
+          <div className="w-full">
+            {bottomCarouselGroups.map((group, index) => (
+              <div key={(group.carousel as { _key?: string })._key ?? `about-carousel-${index}`}>
+                {group.leadBlocks.length ? (
+                  <div className="mx-auto w-full max-w-[1100px]">
+                    <PortableText value={group.leadBlocks} components={portableTextComponents} />
+                  </div>
+                ) : null}
+                <ImageGalleryCarousel images={group.carousel.images} rounded={group.carousel.rounded !== false} />
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
       </main>
     </>
   );

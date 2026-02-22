@@ -5,6 +5,7 @@ import imageUrlBuilder from "@sanity/image-url";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import type { CSSProperties } from "react";
 import { client } from "../client";
+import ImageGalleryCarousel, { type ImageGalleryCarouselValue } from "./ImageGalleryCarousel";
 
 type PortableTextNode = {
   _type: string;
@@ -110,6 +111,10 @@ const portableTextComponents: PortableTextComponents = {
     },
   },
   types: {
+    imageGalleryCarousel: ({ value }) => {
+      const carousel = value as ImageGalleryCarouselValue;
+      return <ImageGalleryCarousel images={carousel.images} rounded={carousel.rounded !== false} />;
+    },
     image: ({ value }) => {
       const imageValue = value as PortableTextNode;
       const imageRef = imageValue?.asset?._ref;
