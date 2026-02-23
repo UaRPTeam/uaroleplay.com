@@ -125,7 +125,7 @@ export default function ImageGalleryCarousel({ images, rounded = true, className
               onClick={() => emblaApi?.scrollPrev()}
               aria-label="Попередні зображення"
               disabled={!canScrollPrev}
-              className="absolute -left-5 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/35 px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm backdrop-blur-sm transition hover:bg-white/55 disabled:opacity-50"
+              className="absolute -left-5 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/55 bg-white/55 px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm backdrop-blur-sm transition hover:bg-white/70 disabled:opacity-50"
             >
               ←
             </button>
@@ -134,7 +134,7 @@ export default function ImageGalleryCarousel({ images, rounded = true, className
               onClick={() => emblaApi?.scrollNext()}
               aria-label="Наступні зображення"
               disabled={!canScrollNext}
-              className="absolute -right-5 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/35 px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm backdrop-blur-sm transition hover:bg-white/55 disabled:opacity-50"
+              className="absolute -right-5 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/55 bg-white/55 px-3 py-2 text-sm font-semibold text-slate-800 shadow-sm backdrop-blur-sm transition hover:bg-white/70 disabled:opacity-50"
             >
               →
             </button>
