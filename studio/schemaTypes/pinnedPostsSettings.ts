@@ -10,6 +10,7 @@ const pinnedPostReference = (title: string, pageValue: 'tips' | 'catalog' | 'abo
       defineArrayMember({
         type: 'reference',
         to: [{type: 'post'}],
+        weak: true,
         options: {
           filter: 'pinToTop == true && postStyle == $pageValue',
           filterParams: {pageValue},

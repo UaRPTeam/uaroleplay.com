@@ -19,15 +19,23 @@ export default defineConfig({
           .title('Контент')
           .items([
             S.listItem()
+              .title('Головна')
+              .id('homePage')
+              .child(S.document().schemaType('homePage').documentId('homePage')),
+            S.listItem()
               .title('Що таке ТРІ')
               .id('aboutPage')
               .child(S.document().schemaType('aboutPage').documentId('aboutPage')),
+            S.listItem()
+              .title('Поради (сторінка)')
+              .id('tipsPage')
+              .child(S.document().schemaType('tipsPage').documentId('tipsPage')),
             S.listItem()
               .title('Закріплені пости')
               .id('pinnedPostsSettings')
               .child(S.document().schemaType('pinnedPostsSettings').documentId('pinnedPostsSettings')),
             ...S.documentTypeListItems().filter(
-              (item) => !['aboutPage', 'pinnedPostsSettings'].includes(item.getId() ?? ''),
+              (item) => !['homePage', 'aboutPage', 'tipsPage', 'pinnedPostsSettings'].includes(item.getId() ?? ''),
             ),
           ]),
     }),

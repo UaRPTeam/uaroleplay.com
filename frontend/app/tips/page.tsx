@@ -2,6 +2,7 @@ import groq from "groq";
 import { Amatic_SC } from "next/font/google";
 import { client } from "../../client";
 import PostCustomCard from "../../components/PostCustomCard";
+import FaqSection, { type FaqSectionValue } from "../../components/FaqSection";
 
 export const revalidate = 0;
 
@@ -26,13 +27,28 @@ type PinnedPostsSettings = {
   tipsPinnedPosts?: Array<{ _ref?: string }>;
 };
 
+type TipsPageDocument = {
+  faq?: FaqSectionValue | null;
+};
+
 const headingFont = Amatic_SC({
   subsets: ["latin"],
   weight: ["700"],
 });
 
 export default async function TipsPage() {
-  const [pinnedSettings, posts] = await Promise.all([
+  const [tipsPage, pinnedSettings, posts] = await Promise.all([
+    client.fetch<TipsPageDocument | null>(groq`
+      *[_type == "tipsPage" && _id == "tipsPage"][0]{
+        faq{
+          title,
+          items[]{
+            ...,
+            "imageUrl": image.asset->url
+          }
+        }
+      }
+    `),
     client.fetch<PinnedPostsSettings | null>(groq`
       *[_type == "pinnedPostsSettings" && _id == "pinnedPostsSettings"][0]{
         tipsPinnedPosts
@@ -75,7 +91,12 @@ export default async function TipsPage() {
 
   return (
     <>
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-30 bg-[#cfe0ec]" />
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-40 bg-[#cfe0ec]" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 -z-30 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/vecteezy_rainbow_pastel_blurred_background.svg')" }}
+      />
       <main className="relative z-10 py-10 sm:py-14">
         <section className="mx-auto w-full max-w-[1100px] px-3 sm:px-4 md:px-6">
         <h1 className={`${headingFont.className} mb-10 text-center text-6xl uppercase leading-[0.9] text-gray-950 sm:mb-12 sm:text-7xl`}>
@@ -103,6 +124,8 @@ export default async function TipsPage() {
             })}
           </div>
         )}
+
+        <FaqSection value={tipsPage?.faq} />
         </section>
       </main>
     </>

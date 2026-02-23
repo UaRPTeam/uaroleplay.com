@@ -139,44 +139,51 @@ export default async function BlogPage() {
   const sortedPosts = [...orderedPinnedPosts, ...remainingPinnedPosts, ...regularPosts];
 
   return (
-    <main className="max-w-[1440px] mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-12 py-8 md:py-10">
-      <h1 className="mb-10 text-center text-4xl font-bold text-gray-900">
-        Каталог
-      </h1>
+    <>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 -z-30 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/vecteezy_rainbow_pastel_blurred_background.svg')" }}
+      />
+      <main className="relative z-10 max-w-[1440px] mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-12 py-8 md:py-10">
+        <h1 className="mb-10 text-center text-4xl font-bold text-gray-900">
+          Каталог
+        </h1>
 
-      {sortedPosts.length === 0 ? (
-        <p className="text-center text-gray-500">No posts published yet.</p>
-      ) : (
-        <div className="grid grid-cols-1 gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-12">
-          {sortedPosts.map((post, index) => {
-            const isFeatured = index < 2;
-            const excerptLimit = isFeatured ? 240 : 140;
-            const excerpt =
-              post.body
-                ?.filter((block) => block._type === "block")
-                .map((block) =>
-                  (block.children ?? []).map((child) => child.text ?? "").join(" ")
-                )
-                .join(" ")
-                .slice(0, excerptLimit) || "";
+        {sortedPosts.length === 0 ? (
+          <p className="text-center text-gray-500">No posts published yet.</p>
+        ) : (
+          <div className="grid grid-cols-1 gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-12">
+            {sortedPosts.map((post, index) => {
+              const isFeatured = index < 2;
+              const excerptLimit = isFeatured ? 240 : 140;
+              const excerpt =
+                post.body
+                  ?.filter((block) => block._type === "block")
+                  .map((block) =>
+                    (block.children ?? []).map((child) => child.text ?? "").join(" ")
+                  )
+                  .join(" ")
+                  .slice(0, excerptLimit) || "";
 
-            return (
-              <PostCatalogCard
-                key={post._id}
-                id={post._id}
-                title={post.title}
-                slug={post.slug.current}
-                categories={post.categories}
-                hashtags={getCatalogHashtags(post)}
-                ratingHashtags={getRatingHashtags(post)}
-                mainImage={post.mainImage}
-                excerpt={excerpt}
-                isFeatured={isFeatured}
-              />
-            );
-          })}
-        </div>
-      )}
-    </main>
+              return (
+                <PostCatalogCard
+                  key={post._id}
+                  id={post._id}
+                  title={post.title}
+                  slug={post.slug.current}
+                  categories={post.categories}
+                  hashtags={getCatalogHashtags(post)}
+                  ratingHashtags={getRatingHashtags(post)}
+                  mainImage={post.mainImage}
+                  excerpt={excerpt}
+                  isFeatured={isFeatured}
+                />
+              );
+            })}
+          </div>
+        )}
+      </main>
+    </>
   );
 }
