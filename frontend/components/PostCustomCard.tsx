@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Amatic_SC } from "next/font/google";
 import imageUrlBuilder from "@sanity/image-url";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import type { CSSProperties } from "react";
@@ -34,11 +33,6 @@ type PostCustomCardProps = {
 
 const imageBuilder = imageUrlBuilder(client);
 
-const titleFont = Amatic_SC({
-  subsets: ["latin"],
-  weight: ["700"],
-});
-
 const getBlockAlign = (value: { children?: Array<{ marks?: string[]; text?: string }> } | undefined): CSSProperties["textAlign"] | undefined => {
   const children = (value?.children ?? []).filter((child) => (child?.text ?? "").trim().length > 0);
   if (!children.length) return undefined;
@@ -59,27 +53,27 @@ const portableTextComponents: PortableTextComponents = {
     },
     h1: ({ children, value }) => {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
-      return <h1 className={`${titleFont.className} mb-4 mt-8 text-6xl uppercase leading-[0.9] text-gray-950`} style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h1>;
+      return <h1 className="mb-4 mt-8 text-6xl uppercase leading-[0.9] text-gray-950" style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h1>;
     },
     h2: ({ children, value }) => {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
-      return <h2 className={`${titleFont.className} mb-4 mt-7 text-5xl uppercase leading-[0.9] text-gray-950`} style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h2>;
+      return <h2 className="mb-4 mt-7 text-5xl uppercase leading-[0.9] text-gray-950" style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h2>;
     },
     h3: ({ children, value }) => {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
-      return <h3 className={`${titleFont.className} mb-4 mt-6 text-4xl uppercase leading-[0.9] text-gray-950`} style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h3>;
+      return <h3 className="mb-4 mt-6 text-4xl uppercase leading-[0.9] text-gray-950" style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h3>;
     },
     h4: ({ children, value }) => {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
-      return <h4 className={`${titleFont.className} mb-3 mt-6 text-3xl uppercase leading-[0.9] text-gray-950`} style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h4>;
+      return <h4 className="mb-3 mt-6 text-3xl uppercase leading-[0.9] text-gray-950" style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h4>;
     },
     h5: ({ children, value }) => {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
-      return <h5 className={`${titleFont.className} mb-3 mt-5 text-2xl uppercase leading-[0.9] text-gray-950`} style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h5>;
+      return <h5 className="mb-3 mt-5 text-2xl uppercase leading-[0.9] text-gray-950" style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h5>;
     },
     h6: ({ children, value }) => {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
-      return <h6 className={`${titleFont.className} mb-3 mt-5 text-xl uppercase leading-[0.9] text-gray-950`} style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h6>;
+      return <h6 className="mb-3 mt-5 text-xl uppercase leading-[0.9] text-gray-950" style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h6>;
     },
     blockquote: ({ children }) => (
       <blockquote className="my-6 border-l-4 border-slate-400 pl-4 text-lg italic leading-relaxed text-slate-800">{children}</blockquote>
@@ -187,7 +181,7 @@ export default function PostCustomCard({
     <article data-post-template="custom" data-post-id={id} className="py-8 sm:py-10">
       <div className={`w-full grid items-center gap-6 md:gap-8 ${gridColumnsClass} lg:gap-10`}>
         <div className={textOrderClass}>
-          <h2 className={`${titleFont.className} text-center text-5xl uppercase leading-[0.9] text-gray-950 sm:text-6xl lg:text-left`}>
+          <h2 className="text-center text-5xl uppercase leading-[0.9] text-gray-950 sm:text-6xl lg:text-left">
             <Link href={`/post/${slug}`} className="transition-opacity hover:opacity-75">
               {title}
             </Link>

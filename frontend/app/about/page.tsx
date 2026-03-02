@@ -3,7 +3,6 @@ import imageUrlBuilder from "@sanity/image-url";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import type { TypedObject } from "@portabletext/types";
 import type { CSSProperties } from "react";
-import { Amatic_SC } from "next/font/google";
 import { client } from "../../client";
 import ImageGalleryCarousel, { type ImageGalleryCarouselValue } from "../../components/ImageGalleryCarousel";
 import PostCustomCard from "../../components/PostCustomCard";
@@ -56,11 +55,6 @@ type PortableTextLikeBlock = TypedObject & {
 };
 
 const imageBuilder = imageUrlBuilder(client);
-const headingFont = Amatic_SC({
-  subsets: ["latin"],
-  weight: ["700"],
-});
-
 const getBlockAlign = (value: { children?: Array<{ marks?: string[]; text?: string }> } | undefined): CSSProperties["textAlign"] | undefined => {
   const children = (value?.children ?? []).filter((child) => (child?.text ?? "").trim().length > 0);
   if (!children.length) return undefined;
@@ -87,7 +81,7 @@ const portableTextComponents: PortableTextComponents = {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
       return (
         <h1
-          className={`${headingFont.className} mb-6 mt-10 text-6xl uppercase leading-[0.9] text-[#081421] sm:text-7xl`}
+          className="mb-6 mt-10 text-6xl uppercase leading-[0.9] text-[#081421] sm:text-7xl"
           style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}
         >
           {children}
@@ -98,7 +92,7 @@ const portableTextComponents: PortableTextComponents = {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
       return (
         <h2
-          className={`${headingFont.className} mb-5 mt-9 text-5xl uppercase leading-[0.9] text-[#081421]`}
+          className="mb-5 mt-9 text-5xl uppercase leading-[0.9] text-[#081421]"
           style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}
         >
           {children}
@@ -109,7 +103,7 @@ const portableTextComponents: PortableTextComponents = {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
       return (
         <h3
-          className={`${headingFont.className} mb-4 mt-8 text-4xl uppercase leading-[0.9] text-[#081421]`}
+          className="mb-4 mt-8 text-4xl uppercase leading-[0.9] text-[#081421]"
           style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}
         >
           {children}
@@ -197,9 +191,13 @@ const portableTextComponents: PortableTextComponents = {
 };
 
 export default async function AboutPage() {
-  const [page, pinnedSettings, posts] = await Promise.all([
-    client.fetch<AboutPageDocument | null>(groq`
-      *[_type == "aboutPage" && _id == "aboutPage"][0]{
+  const data = await client.fetch<{
+    page: AboutPageDocument | null;
+    pinnedSettings: PinnedPostsSettings | null;
+    posts: Post[];
+  }>(groq`
+    {
+      "page": *[_type == "aboutPage" && _id == "aboutPage"][0]{
         title,
         "backgroundImage": backgroundImage.asset->url,
         body[]{
@@ -209,15 +207,11 @@ export default async function AboutPage() {
             "assetUrl": asset->url
           }
         }
-      }
-    `),
-    client.fetch<PinnedPostsSettings | null>(groq`
-      *[_type == "pinnedPostsSettings" && _id == "pinnedPostsSettings"][0]{
+      },
+      "pinnedSettings": *[_type == "pinnedPostsSettings" && _id == "pinnedPostsSettings"][0]{
         aboutPinnedPosts
-      }
-    `),
-    client.fetch<Post[]>(groq`
-      *[
+      },
+      "posts": *[
         _type == "post" &&
         defined(slug.current) &&
         (
@@ -238,9 +232,12 @@ export default async function AboutPage() {
           body[] {
             ...,
           }
-      }
-    `),
-  ]);
+        }
+    }
+  `);
+  const page = data?.page ?? null;
+  const pinnedSettings = data?.pinnedSettings ?? null;
+  const posts = data?.posts ?? [];
 
   const pinnedOrder = (pinnedSettings?.aboutPinnedPosts ?? [])
     .map((item) => item?._ref)
@@ -298,7 +295,7 @@ export default async function AboutPage() {
       <main className="about-page relative z-10 py-10 text-[#0b1b2b] sm:py-14">
       <section className="mx-auto w-full max-w-[1100px] px-3 sm:px-4 md:px-6">
         <h1
-          className={`${headingFont.className} mb-10 text-center text-6xl uppercase leading-[0.9] text-[#081421] sm:mb-12 sm:text-7xl`}
+          className="mb-10 text-center text-6xl uppercase leading-[0.9] text-[#081421] sm:mb-12 sm:text-7xl"
         >
           {page?.title ?? "Що таке ТРІ"}
         </h1>

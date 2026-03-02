@@ -1,10 +1,8 @@
 import groq from "groq";
-import { Amatic_SC } from "next/font/google";
 import { client } from "../../client";
 import PostCustomCard from "../../components/PostCustomCard";
-import FaqSection, { type FaqSectionValue } from "../../components/FaqSection";
 
-export const revalidate = 0;
+export const revalidate = 300;
 
 export const metadata = {
   title: "Поради | UaRP Blog",
@@ -27,36 +25,14 @@ type PinnedPostsSettings = {
   tipsPinnedPosts?: Array<{ _ref?: string }>;
 };
 
-type TipsPageDocument = {
-  faq?: FaqSectionValue | null;
-};
-
-const headingFont = Amatic_SC({
-  subsets: ["latin"],
-  weight: ["700"],
-});
-
 export default async function TipsPage() {
-  const [tipsPage, pinnedSettings, posts] = await Promise.all([
-    client.fetch<TipsPageDocument | null>(groq`
-      *[_type == "tipsPage" && _id == "tipsPage"][0]{
-        faq{
-          title,
-          items[]{
-            ...,
-            "imageUrl": image.asset->url
-          }
-        }
-      }
-    `),
-    client.fetch<PinnedPostsSettings | null>(groq`
-      *[_type == "pinnedPostsSettings" && _id == "pinnedPostsSettings"][0]{
+  const data = await client.fetch<{ pinnedSettings: PinnedPostsSettings | null; posts: Post[] }>(groq`
+    {
+      "pinnedSettings": *[_type == "pinnedPostsSettings" && _id == "pinnedPostsSettings"][0]{
         tipsPinnedPosts
-      }
-    `),
-    client.fetch<Post[]>(groq`
-      *[
-              _type == "post" &&
+      },
+      "posts": *[
+        _type == "post" &&
         defined(slug.current) &&
         (postStyle == "tips" || "Поради" in categories[]->title || "поради" in categories[]->title)
       ]
@@ -70,12 +46,14 @@ export default async function TipsPage() {
           postStyle,
           pinToTop,
           "mainImage": mainImage.asset->url,
-              body[] {
-                ...
-              }
-            }
-    `),
-  ]);
+          body[] {
+            ...
+          }
+        }
+    }
+  `);
+  const pinnedSettings = data?.pinnedSettings ?? null;
+  const posts = data?.posts ?? [];
 
   const pinnedOrder = (pinnedSettings?.tipsPinnedPosts ?? [])
     .map((item) => item?._ref)
@@ -99,7 +77,7 @@ export default async function TipsPage() {
       />
       <main className="relative z-10 py-10 sm:py-14">
         <section className="mx-auto w-full max-w-[1100px] px-3 sm:px-4 md:px-6">
-        <h1 className={`${headingFont.className} mb-10 text-center text-6xl uppercase leading-[0.9] text-gray-950 sm:mb-12 sm:text-7xl`}>
+        <h1 className="mb-10 text-center text-6xl uppercase leading-[0.9] text-gray-950 sm:mb-12 sm:text-7xl">
           Поради
         </h1>
 
@@ -125,7 +103,6 @@ export default async function TipsPage() {
           </div>
         )}
 
-        <FaqSection value={tipsPage?.faq} />
         </section>
       </main>
     </>

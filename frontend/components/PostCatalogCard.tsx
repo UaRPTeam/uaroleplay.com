@@ -8,20 +8,12 @@ type PostCatalogCardProps = {
   id: string;
   title: string;
   slug: string;
-  categories?: string[];
   hashtags?: Array<{ tag: string; categoryKey: string }>;
   ratingHashtags?: string[];
   mainImage?: string;
   excerpt?: string;
   isFeatured?: boolean;
 };
-
-const categoryColors = [
-  "text-blue-600",
-  "text-fuchsia-600",
-  "text-emerald-700",
-  "text-orange-600",
-];
 
 const groupColorMap: Record<string, { text: string; bg: string }> = {
   profileType: { text: "#3366ff", bg: "#d6e0ff" },
@@ -37,7 +29,6 @@ export default function PostCatalogCard({
   id,
   title,
   slug,
-  categories,
   hashtags,
   ratingHashtags,
   mainImage,
@@ -126,21 +117,6 @@ export default function PostCatalogCard({
         ) : null}
 
         <div className="mt-5 flex flex-1 flex-col">
-          {categories?.length ? (
-            <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-              {categories.slice(0, 2).map((cat, i) => (
-                <span
-                  key={`${id}-cat-${cat}`}
-                  className={`text-xs font-semibold uppercase tracking-[0.08em] ${
-                    categoryColors[i % categoryColors.length]
-                  }`}
-                >
-                  {cat}
-                </span>
-              ))}
-            </div>
-          ) : null}
-
           <h2 className="min-h-[60px] overflow-hidden text-[24px] font-bold leading-tight text-gray-800 [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]">
             {title}
           </h2>

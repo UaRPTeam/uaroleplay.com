@@ -1,17 +1,17 @@
 import Link from "next/link";
-import { Amatic_SC } from "next/font/google";
+import FaqSection from "../../components/FaqSection";
+import { getTipsPageFaqSingleton } from "../../lib/sanitySingletons";
 
-const headingFont = Amatic_SC({
-  subsets: ["latin"],
-  weight: ["700"],
-});
+export const revalidate = 300;
 
 export const metadata = {
   title: "Приєднатись | UaRP",
   description: "Сторінка приєднання до спільноти UaRP.",
 };
 
-export default function JoinPage() {
+export default async function JoinPage() {
+  const tipsPage = await getTipsPageFaqSingleton();
+
   return (
     <>
       <div
@@ -27,7 +27,7 @@ export default function JoinPage() {
       <main className="relative z-10 py-10 sm:py-14">
         <section className="mx-auto w-full max-w-[1100px] px-3 sm:px-4 md:px-6">
           <h1
-            className={`${headingFont.className} mb-8 text-center text-6xl uppercase leading-[0.9] text-gray-950 sm:mb-10 sm:text-7xl`}
+            className="mb-8 text-center text-6xl uppercase leading-[0.9] text-gray-950 sm:mb-10 sm:text-7xl"
           >
             Приєднатись
           </h1>
@@ -64,6 +64,8 @@ export default function JoinPage() {
               </Link>
             </div>
           </div>
+
+          <FaqSection value={tipsPage?.faq} />
         </section>
       </main>
     </>
