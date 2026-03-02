@@ -36,6 +36,8 @@ type CatalogHashtag = {
   categoryKey: string;
 };
 
+type PostBodyBlock = NonNullable<Post["body"]>[number];
+
 const getCatalogPageData = unstable_cache(
   async () =>
     client.fetch<{ pinnedSettings: PinnedPostsSettings | null; posts: Post[] }>(groq`
@@ -59,7 +61,9 @@ const getCatalogPageData = unstable_cache(
             postStyle,
             pinToTop,
             "mainImage": mainImage.asset->url,
-            body
+            body[] {
+              ...,
+            }
           }
       }
     `),
@@ -132,10 +136,10 @@ function getPostExcerpt(post: Post) {
   const blocks = Array.isArray(post.body) ? post.body : [];
   if (!blocks.length) return "";
 
-  const blockToText = (block: Post["body"][number]) =>
+  const blockToText = (block: PostBodyBlock) =>
     (block?.children ?? [])
-      .filter((child) => child?._type === "span")
       .map((child) => child?.text ?? "")
+      .filter((text) => text.trim().length > 0)
       .join("")
       .trim();
 
