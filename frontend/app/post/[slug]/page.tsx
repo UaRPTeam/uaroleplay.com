@@ -2,14 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import groq from "groq";
 import imageUrlBuilder from "@sanity/image-url";
-import { Amatic_SC } from "next/font/google";
+import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import type { CSSProperties } from "react";
 import { client } from "../../../client";
 import ImageGalleryCarousel, { type ImageGalleryCarouselValue } from "../../../components/ImageGalleryCarousel";
 
-export const revalidate = 0;
+export const revalidate = 300;
 
 type PostDetails = {
   title: string;
@@ -47,11 +47,27 @@ type PortableTextImage = {
 
 type PortableTextNode = PortableTextBlock | PortableTextImage;
 
+const getPostDetailsBySlug = unstable_cache(
+  async (slug: string) =>
+    client.fetch<PostDetails | null>(
+      groq`
+        *[_type == "post" && slug.current == $slug][0]{
+          title,
+          "categories": categories[]->title,
+          hashtags,
+          hashtag,
+          postStyle,
+          "mainImage": mainImage.asset->url,
+          body
+        }
+      `,
+      { slug }
+    ),
+  ["post-details-by-slug"],
+  { revalidate: 300 },
+);
+
 const imageBuilder = imageUrlBuilder(client);
-const headingFont = Amatic_SC({
-  subsets: ["latin"],
-  weight: ["700"],
-});
 
 const getBlockAlign = (value: { children?: Array<{ marks?: string[]; text?: string }> } | undefined): CSSProperties["textAlign"] | undefined => {
   const children = (value?.children ?? []).filter((child) => (child?.text ?? "").trim().length > 0);
@@ -73,27 +89,27 @@ const portableTextComponents: PortableTextComponents = {
     },
     h1: ({ children, value }) => {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
-      return <h1 className={`${headingFont.className} mb-6 mt-10 text-6xl uppercase leading-[0.9] text-gray-900 sm:text-7xl`} style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h1>;
+      return <h1 className="mb-6 mt-10 text-6xl uppercase leading-[0.9] text-gray-900 sm:text-7xl" style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h1>;
     },
     h2: ({ children, value }) => {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
-      return <h2 className={`${headingFont.className} mb-5 mt-9 text-5xl uppercase leading-[0.9] text-gray-900`} style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h2>;
+      return <h2 className="mb-5 mt-9 text-5xl uppercase leading-[0.9] text-gray-900" style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h2>;
     },
     h3: ({ children, value }) => {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
-      return <h3 className={`${headingFont.className} mb-4 mt-8 text-4xl uppercase leading-[0.9] text-gray-900`} style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h3>;
+      return <h3 className="mb-4 mt-8 text-4xl uppercase leading-[0.9] text-gray-900" style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h3>;
     },
     h4: ({ children, value }) => {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
-      return <h4 className={`${headingFont.className} mb-4 mt-7 text-3xl uppercase leading-[0.9] text-gray-900`} style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h4>;
+      return <h4 className="mb-4 mt-7 text-3xl uppercase leading-[0.9] text-gray-900" style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h4>;
     },
     h5: ({ children, value }) => {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
-      return <h5 className={`${headingFont.className} mb-3 mt-6 text-2xl uppercase leading-[0.9] text-gray-900`} style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h5>;
+      return <h5 className="mb-3 mt-6 text-2xl uppercase leading-[0.9] text-gray-900" style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h5>;
     },
     h6: ({ children, value }) => {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
-      return <h6 className={`${headingFont.className} mb-3 mt-6 text-xl uppercase leading-[0.9] text-gray-900`} style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h6>;
+      return <h6 className="mb-3 mt-6 text-xl uppercase leading-[0.9] text-gray-900" style={textAlign ? { textAlign, clear: textAlign !== "left" ? "both" : undefined } : undefined}>{children}</h6>;
     },
     blockquote: ({ children, value }) => {
       const textAlign = getBlockAlign(value as { children?: Array<{ marks?: string[] }> });
@@ -201,20 +217,7 @@ export default async function PostDetailsPage({
 }) {
   const { slug } = await params;
 
-  const post = await client.fetch<PostDetails | null>(
-    groq`
-      *[_type == "post" && slug.current == $slug][0]{
-        title,
-        "categories": categories[]->title,
-        hashtags,
-        hashtag,
-        postStyle,
-        "mainImage": mainImage.asset->url,
-        body
-      }
-    `,
-    { slug }
-  );
+  const post = await getPostDetailsBySlug(slug);
 
   if (!post) {
     notFound();

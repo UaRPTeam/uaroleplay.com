@@ -72,22 +72,26 @@ function TileCard({
         withBackground ? "bg-white/55 backdrop-blur-sm" : "bg-transparent"
       } ${roundedClass} ${className ?? ""}`}
     >
+      {imageUrl ? (
+        <>
+          <div className="absolute inset-0">
+            <Image
+              src={imageUrl}
+              alt={item.title?.trim() || "CTA image"}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover object-center opacity-30 transition duration-300 group-hover:scale-[1.02] group-hover:opacity-40"
+            />
+          </div>
+          <div className="absolute inset-0 bg-white/45" />
+        </>
+      ) : null}
+
       <div className="relative z-10 flex h-full min-h-[180px] flex-col justify-between gap-4">
         <div className="flex items-start justify-between gap-4">
           <h3 className="text-xl font-bold leading-tight text-slate-900 sm:text-2xl">
             {item.title ?? "CTA"}
           </h3>
-          {imageUrl ? (
-            <div className="relative h-20 w-20 shrink-0 sm:h-24 sm:w-24">
-              <Image
-                src={imageUrl}
-                alt={item.title?.trim() || "CTA image"}
-                fill
-                sizes="96px"
-                className="object-contain"
-              />
-            </div>
-          ) : null}
         </div>
 
         <div className="flex items-center justify-between gap-3">

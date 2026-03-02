@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Amatic_SC, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -12,6 +12,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const headingFont = Amatic_SC({
+  variable: "--font-heading",
+  subsets: ["latin", "cyrillic"],
+  weight: ["700"],
 });
 
 export const metadata: Metadata = {
@@ -28,7 +34,7 @@ export default function RootLayout({
     <html lang="uk">
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col antialiased text-gray-900`}
+        className={`${geistSans.variable} ${geistMono.variable} ${headingFont.variable} min-h-screen flex flex-col antialiased text-gray-900`}
       >
         <Header />
         <main className="flex-1 pb-8">

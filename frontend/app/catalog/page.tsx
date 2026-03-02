@@ -1,8 +1,9 @@
 import groq from "groq";
+import { unstable_cache } from "next/cache";
 import { client } from "../../client";
 import PostCatalogCard from "../../components/PostCatalogCard";
 
-export const revalidate = 0;
+export const revalidate = 300;
 
 export const metadata = {
   title: "Каталог | UaRP Blog",
@@ -13,13 +14,17 @@ type Post = {
   _id: string;
   title: string;
   slug: { current: string };
+  body?: Array<{
+    _type?: string;
+    style?: string;
+    children?: Array<{ _type?: string; text?: string }>;
+  }>;
   hashtags?: Array<string | { category?: string; tags?: string[] }>;
   hashtag?: string;
   categories?: string[];
   postStyle?: "tips" | "catalog" | "about";
   pinToTop?: boolean;
   mainImage?: string;
-  body?: Array<{ _type: string; children?: Array<{ text?: string }> }>;
 };
 
 type PinnedPostsSettings = {
@@ -30,6 +35,41 @@ type CatalogHashtag = {
   tag: string;
   categoryKey: string;
 };
+
+type PostBodyBlock = NonNullable<Post["body"]>[number];
+
+const getCatalogPageData = unstable_cache(
+  async () =>
+    client.fetch<{ pinnedSettings: PinnedPostsSettings | null; posts: Post[] }>(groq`
+      {
+        "pinnedSettings": *[_type == "pinnedPostsSettings" && _id == "pinnedPostsSettings"][0]{
+          catalogPinnedPosts
+        },
+        "posts": *[
+          _type == "post" &&
+          defined(slug.current) &&
+          (postStyle == "catalog" || "Каталог" in categories[]->title || "каталог" in categories[]->title)
+        ]
+          | order(publishedAt desc)
+          {
+            _id,
+            title,
+            slug,
+            hashtags,
+            hashtag,
+            "categories": categories[]->title,
+            postStyle,
+            pinToTop,
+            "mainImage": mainImage.asset->url,
+            body[] {
+              ...,
+            }
+          }
+      }
+    `),
+  ["catalog-page-data"],
+  { revalidate: 300 },
+);
 
 function getCatalogHashtags(post: Post) {
   const collected: Array<CatalogHashtag & { priority: number; order: number }> = [];
@@ -92,39 +132,31 @@ function getRatingHashtags(post: Post) {
   return undefined;
 }
 
+function getPostExcerpt(post: Post) {
+  const blocks = Array.isArray(post.body) ? post.body : [];
+  if (!blocks.length) return "";
+
+  const blockToText = (block: PostBodyBlock) =>
+    (block?.children ?? [])
+      .map((child) => child?.text ?? "")
+      .filter((text) => text.trim().length > 0)
+      .join("")
+      .trim();
+
+  const normalText = blocks
+    .filter((block) => block?._type === "block" && block?.style === "normal")
+    .map(blockToText)
+    .find((text) => text.length > 0);
+  if (normalText) return normalText;
+
+  const firstNonEmpty = blocks.map(blockToText).find((text) => text.length > 0);
+  return firstNonEmpty ?? "";
+}
+
 export default async function BlogPage() {
-  const [pinnedSettings, posts] = await Promise.all([
-    client.fetch<PinnedPostsSettings | null>(groq`
-      *[_type == "pinnedPostsSettings" && _id == "pinnedPostsSettings"][0]{
-        catalogPinnedPosts
-      }
-    `),
-    client.fetch<Post[]>(groq`
-      *[
-        _type == "post" &&
-        defined(slug.current) &&
-        (postStyle == "catalog" || "Каталог" in categories[]->title || "каталог" in categories[]->title)
-      ]
-        | order(publishedAt desc)
-        {
-          _id,
-          title,
-          slug,
-          hashtags,
-          hashtag,
-          "categories": categories[]->title,
-          postStyle,
-          pinToTop,
-          "mainImage": mainImage.asset->url,
-          body[] {
-            ...,
-            children[]{
-              text
-            }
-          }
-        }
-    `),
-  ]);
+  const data = await getCatalogPageData();
+  const pinnedSettings = data?.pinnedSettings ?? null;
+  const posts = data?.posts ?? [];
 
   const pinnedOrder = (pinnedSettings?.catalogPinnedPosts ?? [])
     .map((item) => item?._ref)
@@ -146,7 +178,7 @@ export default async function BlogPage() {
         style={{ backgroundImage: "url('/images/vecteezy_rainbow_pastel_blurred_background.svg')" }}
       />
       <main className="relative z-10 max-w-[1440px] mx-auto w-full px-3 sm:px-4 md:px-6 lg:px-12 py-8 md:py-10">
-        <h1 className="mb-10 text-center text-4xl font-bold text-gray-900">
+        <h1 className="mb-10 text-center text-6xl uppercase leading-[0.9] text-gray-900 sm:mb-12 sm:text-7xl">
           Каталог
         </h1>
 
@@ -156,15 +188,7 @@ export default async function BlogPage() {
           <div className="grid grid-cols-1 gap-x-10 gap-y-12 md:grid-cols-2 lg:grid-cols-12">
             {sortedPosts.map((post, index) => {
               const isFeatured = index < 2;
-              const excerptLimit = isFeatured ? 240 : 140;
-              const excerpt =
-                post.body
-                  ?.filter((block) => block._type === "block")
-                  .map((block) =>
-                    (block.children ?? []).map((child) => child.text ?? "").join(" ")
-                  )
-                  .join(" ")
-                  .slice(0, excerptLimit) || "";
+              const excerpt = getPostExcerpt(post);
 
               return (
                 <PostCatalogCard
@@ -172,7 +196,6 @@ export default async function BlogPage() {
                   id={post._id}
                   title={post.title}
                   slug={post.slug.current}
-                  categories={post.categories}
                   hashtags={getCatalogHashtags(post)}
                   ratingHashtags={getRatingHashtags(post)}
                   mainImage={post.mainImage}
